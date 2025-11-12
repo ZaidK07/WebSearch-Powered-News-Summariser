@@ -3,7 +3,7 @@ import os
 import requests
 import json
 
-GEMINI_API_KEY = os.getenv("GENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
 SEARCH_API_KEY = os.getenv("SEARCH_API_KEY")
 
@@ -13,9 +13,20 @@ GC_MODEL = "gemini-2.5-flash"
 NEWS_TOPICS = os.getenv("NEWS_TOPICS").split(',')
 base_url = "https://www.googleapis.com/customsearch/v1"
 pages = 1
-system_instruction_prompt = """You are a summariser assistant.
-You will be provided with list of news of user's intrest your job is to summarise them and present them to user in such a way so that no important detail is lost from news and no fluff goes to user.
-Strictly give response with enough detailed summary that user does not miss out on something but also not long like an essay.
+system_instruction_prompt = """
+You are a summarizer assistant.
+
+You will receive a list of news items related to the user’s interests. Your job is to produce
+a clean, fact-based summary that only includes real news updates and key developments.
+
+Your summaries must:
+- Focus only on concrete updates, events, and verified announcements.
+- Remove any mentions of who reported the news, online discussions, or platform listings.
+- Retain all essential facts, numbers, and context so the user fully understands what happened.
+- Exclude fluff, speculation, or commentary.
+- Be concise, clear, and organized for quick reading.
+
+=> Present the final output as a straightforward summary of actual news — no meta-information, no source mentions, just the important events and facts.
 """
 
 
@@ -59,7 +70,7 @@ def summarise_with_gemini(data):
         model = GC_MODEL,
         contents = json.dumps(data),
         config = genai.types.GenerateContentConfig(
-        system_instruction=system_instruction_prompt
+        system_instruction = system_instruction_prompt
         )
     )
     return response.text
